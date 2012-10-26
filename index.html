@@ -1,0 +1,203 @@
+<html>
+    <head>
+        <title>Engage3D Demo</title>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="/public/js/three.min.js"></script>
+        <script src="/public/js/Stats.js"></script>
+        <script src="/public/js/jquery-1.4.2.min.js"></script>
+
+        <script type="x-shader/x-vertex" id="vertexshader">
+        attribute float size;
+        attribute vec3 pos;
+        attribute vec3 customColor;
+
+        varying vec4 vColor;
+
+        void main(){
+            vColor = vec4(customColor, 1.0);
+            vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+            gl_PointSize = size / 50.0;
+            gl_Position = projectionMatrix * mvPosition;
+        }
+        </script>
+
+        <script type="x-shader/x-fragment" id="fragmentshader">
+        uniform vec3 color;
+        varying vec4 vColor;
+
+        void main(){
+            gl_FragColor = vColor;
+        }
+        </script>
+
+
+        <script>
+        $(function () {
+            var socket = io.connect('http://localhost:8080');
+
+            var renderer, scene, camera, stats, controls;
+            var uniforms, attributes;
+            var setup = false;
+            var shaderMaterial;
+            var WIDTH = window.innerWidth;
+            var HEIGHT = window.innerHeight;
+            var fov = 40;
+
+            init();
+            animate();
+
+            /*
+            */
+            function animate() {
+                requestAnimationFrame(animate);
+                controls.update();
+                render();
+                stats.update();
+            }
+
+            /*
+            */
+            function doSetup(data) {
+                var dataLength = 640 * 480;
+                var geometry = new THREE.Geometry();
+                var i, psys;
+
+                setup = true;
+
+                for (i = 0; i < dataLength; i++) {
+                    geometry.vertices.push(new THREE.Vector3());
+                }
+
+                psys = new THREE.ParticleSystem(geometry, shaderMaterial);
+                psys.dynamic = true;
+
+                for (i = 0; i < dataLength; i++) {
+                    attributes.size.value[i] = 0;
+                }
+
+                var values_colors = attributes.customColor.value;
+                for(i = 0; i < dataLength; i++){
+                    values_colors[i] = new THREE.Color( 0xffaa00 );
+                }
+
+                scene.add(psys);
+            }
+
+            /*
+            */
+            function render() {
+                renderer.render(scene, camera);
+            }
+
+            /*
+            */
+            function init() {
+                camera = new THREE.PerspectiveCamera(fov, WIDTH / HEIGHT, 1, 10000);
+                camera.position.z = 1500;
+
+                scene = new THREE.Scene();
+
+                attributes = {
+                    size: {
+                        type: 'f',
+                        value: []
+                    },
+                    pos: {
+                        type: "v3",
+                        value: []
+                    },
+                    customColor: {
+                        type: "c",
+                        value: []
+                    }
+                };
+
+                shaderMaterial = new THREE.ShaderMaterial({
+                    attributes: attributes,
+                    vertexShader: document.getElementById('vertexshader').textContent,
+                    fragmentShader: document.getElementById('fragmentshader').textContent,
+                         vertexColors: true
+                });
+
+                renderer = new THREE.WebGLRenderer();
+                renderer.setSize(WIDTH, HEIGHT);
+
+                controls = new THREE.OrbitControls( camera );
+                controls.addEventListener( 'change', render );
+
+                var container = document.getElementById('container');
+                container.appendChild(renderer.domElement);
+
+                // FPS stats
+                stats = new Stats();
+                stats.domElement.style.position = 'absolute';
+                stats.domElement.style.top = '0px';
+                container.appendChild(stats.domElement);
+
+                function onWindowResize() {
+                    camera.aspect = WIDTH / HEIGHT;
+                    camera.projectionMatrix = camera.projectionMatrix.makePerspective(fov, window.innerWidth / window.innerHeight, 1, 10000);
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                }
+                window.addEventListener('resize', onWindowResize, false);
+            }
+
+            /*
+              One frame from the Kinect
+            */
+            socket.on('frame', function (data) {
+                var i, rgb, col, row;
+
+                if(!setup){
+                    doSetup(data);
+                }
+
+                i = 0;
+                for(row = 0; row < 480; row++){
+                    for(col = 0; col < 640; col++){
+
+                        rgb = data.frame.color[479-row][col];
+
+                        attributes.customColor.value[i] = {
+                            r: rgb[0]/255,
+                            g: rgb[1]/255,
+                            b: rgb[2]/255
+                        };
+
+                        attributes.pos.value[i] = {
+                            x:  col - 240,
+                            y:  row - 320,
+                            // Center cloud
+                            z:  (2047/2) - data.frame.depth[479-row][col]  
+                        };
+                        attributes.size.value[i] = data.frame.depth[479-row][col]/2047;
+                        i++;
+                    }
+                }
+                attributes.size.needsUpdate = true;
+                attributes.pos.needsUpdate = true;
+                attributes.customColor.needsUpdate  = true;
+            });
+        });
+        </script>
+
+        <style>
+            body {
+              /* Create a gradient for the background */
+              background: rgb(0,0,0); 
+              background: -moz-radial-gradient(center, ellipse cover, rgba(0,0,0,1) 0%, rgba(69,72,77,1) 100%); 
+              background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(0,0,0,1)), color-stop(100%,rgba(69,72,77,1))); 
+              background: -webkit-radial-gradient(center, ellipse cover, rgba(0,0,0,1) 0%,rgba(69,72,77,1) 100%); 
+              background: -o-radial-gradient(center, ellipse cover, rgba(0,0,0,1) 0%,rgba(69,72,77,1) 100%); 
+              background: -ms-radial-gradient(center, ellipse cover, rgba(0,0,0,1) 0%,rgba(69,72,77,1) 100%); 
+              background: radial-gradient(ellipse at center, rgba(0,0,0,1) 0%,rgba(69,72,77,1) 100%); 
+              filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#000000', endColorstr='#45484d',GradientType=1 ); 
+              /* Scrollbars make the demo look ugly */
+              overflow: hidden;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container"></div>
+    </body>
+</html>
