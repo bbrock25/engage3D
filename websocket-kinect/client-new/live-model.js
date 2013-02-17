@@ -1,5 +1,5 @@
 LiveModel = function () {
-    var inputW, inputH, useEvery, w, h, pMaterial,  particles, particleSystem, dataCallback, panData;
+    var inputW, inputH, useEvery, w, h, pMaterial,  particles, particleSystem, dataCallback;
 
 
     this.sceneContents = function() {
@@ -74,28 +74,20 @@ LiveModel = function () {
       return _results;
     })();
 
-    // _ref4 = [0, 1], currentOutArrayIdx = _ref4[0], prevOutArrayIdx = _ref4[1];
 
-    pd = [];
+    var pd=[];			// pan data -- TODO: get rid of this
     this.panData = function() { return pd; }
 
     dataCallback = function(e) {
       var aByte, byteIdx, bytes, depth, inStream, keyFrame, outStream, pIdx, prevBytes, pv, x, y, _ref5;
-      // _ref5 = [prevOutArrayIdx, currentOutArrayIdx], currentOutArrayIdx = _ref5[0], prevOutArrayIdx = _ref5[1];
-      // inStream = LZMA.wrapArrayBuffer(new Uint8Array(e.data));
-      // outStream = LZMA.wrapArrayBuffer(outArrays[currentOutArrayIdx]);
-      // LZMA.decompress(inStream, inStream, outStream, rawDataLen);
-      // bytes = outStream.data;
+
       bytes = new Uint8Array(e.data);
       prevBytes = new Uint8Array(e.data);
       keyFrame = bytes[0];
       if (!(keyFrame || seenKeyFrame)) return;
       seenKeyFrame = true;
 
-      // _ref6 = [bytes[1], bytes[2], bytes[3], bytes[4]], qtl = _ref6[0], qtr = _ref6[1], qbl = _ref6[2], qbr = _ref6[3];
-      // dynaPan = dynaPan * 0.9 + ((qtr + qbr) - (qtl + qbl)) * 0.1;
-
-	pd = [bytes[1], bytes[2], bytes[3], bytes[4]];
+	    pd = [bytes[1], bytes[2], bytes[3], bytes[4]];
 
       pIdx = 0;
       byteIdx = 5;
