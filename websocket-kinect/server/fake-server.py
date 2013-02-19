@@ -206,7 +206,7 @@ class Kinect:
       
       print "runloop", len(pc_data)
       #time.sleep(0.025)
-      time.sleep(.5)
+      time.sleep(1)
       reactor.callFromThread(self.wsFactory.broadcast, pc_data.tostring(), True)
 
 
