@@ -54,6 +54,10 @@
 	scene = new THREE.Scene();
 	scene.add(camera);
 	if (params.fog) scene.fog = new THREE.FogExp2(bgColour, 0.00033);
+	
+	
+	light = new THREE.AmbientLight(0x404040);
+	scene.add(light);
 
 	// kinect stuff
 	kmodel = new LiveModel();

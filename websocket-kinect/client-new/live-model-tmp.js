@@ -19,7 +19,6 @@ LiveModel = function() {
     var model = new THREE.Geometry();
     model.dynamic = true;
 
-
     var vertices;
     var i,j
     // var usualY=[];
@@ -32,6 +31,7 @@ LiveModel = function() {
 
 	    model.vertices.push(new THREE.Vector3(x,y,0));
 //	    usualY.push(y);
+
 	}
     }
 
@@ -45,25 +45,40 @@ LiveModel = function() {
 	    var b = (j+1)*vw+i;
 	    var c = (j*vw+i+1);
 	    var d = (j+1)*vw+i+1;
+	    
+	    var face = new THREE.Face3(a,b,c);
+	    face.normal.set(0,0,1);
+	    model.faces.push( face );
+	    model.faceUvs[0].push([new THREE.Vector2(1,1),new THREE.Vector2(0,1),new THREE.Vector2(1,0)]);
+	    model.faceVertexUvs[0].push([new THREE.Vector2(1,1),new THREE.Vector2(0,1),new THREE.Vector2(1,0)]);
+	    
+	    face = new THREE.Face3(c,b,d);
+	    face.normal.set(0,0,1);
+	    model.faces.push( face );
 
-	    model.faces.push( new THREE.Face3(a,b,c) );
-	    model.faces.push( new THREE.Face3(c,b,d) );
+	    model.faceUvs[0].push([new THREE.Vector2(1,1),new THREE.Vector2(0,1),new THREE.Vector2(1,0)]);
+	    model.faceVertexUvs[0].push([new THREE.Vector2(1,1),new THREE.Vector2(0,1),new THREE.Vector2(1,0)]);
 	}
     }
+    
+    model.computeBoundingSphere();
+    model.computeFaceNormals();
+    model.computeVertexNormals();
+    model.computeTangents();
+
 
     // model.computeBoundingSphere();
-
-    var material = new THREE.MeshBasicMaterial();
+    //var texture = new THREE.DataTexture(new Uint8Array(inputW*inputH), inputW, inputH);
+    
+    var material = new THREE.MeshLambertMaterial();
     material.wireframe=false;
 
     //var faceMesh = new THREE.Mesh(model, material);
-    var faceMesh = new THREE.Mesh(model, material,true);
+    var faceMesh = new THREE.Mesh(model);
 
     this.sceneContents = function() {
 	return faceMesh;
     };
-
-    
 
 
     // WEBSOCKET STUFF
@@ -81,6 +96,12 @@ LiveModel = function() {
     	var pIdx = 0;
     	var byteIdx = 5;
     	var rgbByteIdx = numData+5;
+
+	// image data to texture the mesh
+	// material.map = new THREE.DataTexture(new Uint8Array(bytes, rgbByteIdx), 
+	// 				     inputW, inputH, THREE.RGBFormat);
+
+	material.needsUpdate = true;
 
 
 	var v=0;
@@ -101,13 +122,12 @@ LiveModel = function() {
 	    }
 	    
 	    byteIdx+=skip;
-	    rgbByteIdx+=skip;
 	}
 
 
 	// console.log("v: " + v +"numVerts: "+numVerts+"numData: " + numData);
 	// console.log("post set: " + byteIdx + "," + numData+5);
-	    
+	
 
 	// works when inputH,inputW = vh,vw
 	// for (y=0; y<inputH; y++) {
