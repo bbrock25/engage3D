@@ -34,7 +34,6 @@ LiveModel = function () {
     
 
     // set up initial geometry
-
     var pMaterial = new THREE.ParticleBasicMaterial({
 	//color: fgColour,
 	vertexColors:true,
@@ -43,7 +42,7 @@ LiveModel = function () {
 
     
     var v = function(x, y, z) {
-	return new THREE.Vertex(new THREE.Vector3(x, y, z));
+	return new THREE.Vector3(x, y, z);
     };
 
 
