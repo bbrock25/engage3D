@@ -21,7 +21,6 @@ LiveModel = function() {
 
     var vertices;
     var i,j
-    // var usualY=[];
 
     for (j=vh-1; j>=0; j--) {	// server loads points bottom to top
 	for (i=0; i<vw; i++) {
@@ -30,8 +29,6 @@ LiveModel = function() {
 	    var y = ((j*dy)-offh)*2;
 
 	    model.vertices.push(new THREE.Vector3(x,y,0));
-//	    usualY.push(y);
-
 	}
     }
 
@@ -46,35 +43,36 @@ LiveModel = function() {
 	    var c = (j*vw+i+1);
 	    var d = (j+1)*vw+i+1;
 	    
-	    var face = new THREE.Face3(a,b,c);
-	    face.normal.set(0,0,1);
-	    model.faces.push( face );
-	    model.faceUvs[0].push([new THREE.Vector2(1,1),new THREE.Vector2(0,1),new THREE.Vector2(1,0)]);
-	    model.faceVertexUvs[0].push([new THREE.Vector2(1,1),new THREE.Vector2(0,1),new THREE.Vector2(1,0)]);
-	    
-	    face = new THREE.Face3(c,b,d);
-	    face.normal.set(0,0,1);
-	    model.faces.push( face );
+	    model.faces.push( new THREE.Face3(a,b,c) );
+	    model.faces.push( new THREE.Face3(c,b,d) );
 
-	    model.faceUvs[0].push([new THREE.Vector2(1,1),new THREE.Vector2(0,1),new THREE.Vector2(1,0)]);
-	    model.faceVertexUvs[0].push([new THREE.Vector2(1,1),new THREE.Vector2(0,1),new THREE.Vector2(1,0)]);
+	    model.faceVertexUvs[0].push( [ new THREE.Vector2(0,0),
+					   new THREE.Vector2(1,1),
+					   new THREE.Vector2(1,0) ] );
+	    model.faceVertexUvs[0].push( [ new THREE.Vector2(0,0),
+					   new THREE.Vector2(1,1),
+					   new THREE.Vector2(1,0) ] );
+
 	}
     }
     
+//    var foo = new THREE.TetrahedronGeometry(100);
+    console.log("vertex count: " + model.vertices.length);
+    console.log("face count: " + model.faces.length);
+    console.log("faceVertexUvs[0] count: " + model.faceVertexUvs[0].length);
+    console.log("faceVertexUvs[0][0] count: " + model.faceVertexUvs[0][0].length);
+
     model.computeBoundingSphere();
     model.computeFaceNormals();
     model.computeVertexNormals();
     model.computeTangents();
+    THREE.GeometryUtils.normalizeUVs(model);
 
 
-    // model.computeBoundingSphere();
-    //var texture = new THREE.DataTexture(new Uint8Array(inputW*inputH), inputW, inputH);
-    
-    var material = new THREE.MeshLambertMaterial();
-    material.wireframe=false;
+    var material = new THREE.MeshBasicMaterial();
+    material.wireframe=true;
 
-    //var faceMesh = new THREE.Mesh(model, material);
-    var faceMesh = new THREE.Mesh(model);
+    var faceMesh = new THREE.Mesh(model, material);
 
     this.sceneContents = function() {
 	return faceMesh;
@@ -98,11 +96,10 @@ LiveModel = function() {
     	var rgbByteIdx = numData+5;
 
 	// image data to texture the mesh
-	// material.map = new THREE.DataTexture(new Uint8Array(bytes, rgbByteIdx), 
-	// 				     inputW, inputH, THREE.RGBFormat);
+	material.map = new THREE.DataTexture(new Uint8Array(bytes, rgbByteIdx), 
+					     inputW, inputH, THREE.RGBFormat);
 
 	material.needsUpdate = true;
-
 
 	var v=0;
 	var x,y;
@@ -125,9 +122,6 @@ LiveModel = function() {
 	}
 
 
-	// console.log("v: " + v +"numVerts: "+numVerts+"numData: " + numData);
-	// console.log("post set: " + byteIdx + "," + numData+5);
-	
 
 	// works when inputH,inputW = vh,vw
 	// for (y=0; y<inputH; y++) {
