@@ -8,10 +8,12 @@ LiveModel = function() {
     var offw = inputW/2;
 
 
-     //var vh = 200;		// defines number of faces
-     //var vw = 300;
-    var vh = 40;		// defines number of faces
-    var vw = 50;
+    var vh = 100;
+    var vw = 100;
+// var vh = 200;		// defines number of faces
+    // var vw = 300;
+    // var vh = 40;		// defines number of faces
+    // var vw = 50;
 
 
     var dy = inputH / vh;
@@ -37,8 +39,8 @@ LiveModel = function() {
     var vertexCount = model.vertices.length;
 
     
-     for (j=0; j<vh-1; j++) {
-     	 for (i=0; i<vw-1; i++) {
+    for (j=0; j<vh-1; j++) {
+     	for (i=0; i<vw-1; i++) {
 
 	    var a = j*vw+i;
 	    var b = (j+1)*vw+i;
@@ -50,6 +52,17 @@ LiveModel = function() {
 
 	    model.faces.push( new THREE.Face3(a,b,c) );
 	    model.faces.push( new THREE.Face3(c,b,d) );
+	    
+	    // gotta fix this
+	    var _ax = (0.5*model.vertices[a].x+offw)/inputW;
+	    var _ay = ((0.5*model.vertices[a].y+offh)/inputH-.4)%1;
+	    var _bx = (0.5*model.vertices[b].x+offw)/inputW;
+	    var _by = ((0.5*model.vertices[b].y+offh)/inputH-.4)%1;
+	    var _cx = (0.5*model.vertices[c].x+offw)/inputW;
+	    var _cy = ((0.5*model.vertices[c].y+offh)/inputH-.4)%1;
+	    var _dx = (0.5*model.vertices[d].x+offw)/inputW;
+	    var _dy = ((0.5*model.vertices[d].y+offh)/inputH-.4)%1;
+
 
 	    // model.faceVertexUvs[0].push( [ new THREE.Vector2(0,0),
 	    // 				   new THREE.Vector2(1,1),
@@ -58,12 +71,19 @@ LiveModel = function() {
 	    // 				   new THREE.Vector2(1,1),
 	    // 				   new THREE.Vector2(1,0) ] );
 
-	    model.faceVertexUvs[0].push( [ new THREE.Vector2(-(vw-i)/vw,.5*(vh-j)/vh),
-					   new THREE.Vector2(-(vw-i)/vw,.5*(vh-j-1)/vh),
-					   new THREE.Vector2(-(vw-i-1)/vw,.5*(vh-j)/vh) ] );
-	    model.faceVertexUvs[0].push( [ new THREE.Vector2(-(vw-i-1)/vw,.5*(vh-j)/vh),
-					   new THREE.Vector2(-(vw-i)/vw,.5*(vh-j-1)/vh),
-					   new THREE.Vector2(-(vw-i-1)/vw,.5*(vh-j-1)/vh) ] );
+	    // model.faceVertexUvs[0].push( [ new THREE.Vector2(-(vw-i)/vw,.5*(vh-j)/vh),
+	    // 				   new THREE.Vector2(-(vw-i)/vw,.5*(vh-j-1)/vh),
+	    // 				   new THREE.Vector2(-(vw-i-1)/vw,.5*(vh-j)/vh) ] );
+	    // model.faceVertexUvs[0].push( [ new THREE.Vector2(-(vw-i-1)/vw,.5*(vh-j)/vh),
+	    // 				   new THREE.Vector2(-(vw-i)/vw,.5*(vh-j-1)/vh),
+	    // 				   new THREE.Vector2(-(vw-i-1)/vw,.5*(vh-j-1)/vh) ] );
+
+	    model.faceVertexUvs[0].push( [ new THREE.Vector2(_ax,_ay),
+	    				   new THREE.Vector2(_bx,_by),
+	    				   new THREE.Vector2(_cx,_cy) ] );
+	    model.faceVertexUvs[0].push( [ new THREE.Vector2(_cx,_cy),
+	    				   new THREE.Vector2(_bx,_by),
+	    				   new THREE.Vector2(_dx,_dy) ] );
 
 
 
@@ -73,10 +93,9 @@ LiveModel = function() {
 
     THREE.GeometryUtils.normalizeUVs(model);
 
-
     //model.computeBoundingSphere();
-    model.computeFaceNormals();
-    model.computeVertexNormals();
+    // model.computeFaceNormals();
+    // model.computeVertexNormals();
     // model.computeTangents();
     // model.tangentsNeedUpdate = true;
     // model.normalsNeedUpdate = true;
@@ -150,6 +169,15 @@ LiveModel = function() {
 
 		var abyte= bytes[byteIdx+byteOffset];
 		
+		// var depth =128;
+
+		// // get local min depth
+		// for (var i=0; i<dx; i++) {
+		//     var b= bytes[byteIdx+byteOffset+i];
+		//     if (b < depth)
+		// 	depth = b;
+		// }
+
 		var depth = (128 - abyte)*10;
 		
 		model.vertices[v].setZ(depth);

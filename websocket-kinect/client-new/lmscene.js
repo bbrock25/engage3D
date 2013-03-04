@@ -28,11 +28,11 @@
 	    stats.domElement.id = 'stats';
 	    document.body.appendChild(stats.domElement);
 	} 
-	// bgColour = 0x000000;
-	// fgColour = 0xffffff;
+	bgColour = 0x000000;
+	fgColour = 0xffffff;
 	
-	bgColour = 0xFF0000;
-	fgColour = 0x000000;
+	// bgColour = 0xFF0000;
+	// fgColour = 0x000000;
 
 	Transform.prototype.t = Transform.prototype.transformPoint;
 	
