@@ -8,8 +8,8 @@ LiveModel = function() {
     var offw = inputW/2;
 
 
-    var vh = 100;
-    var vw = 100;
+    var vh = 200;
+    var vw = 200;
 // var vh = 200;		// defines number of faces
     // var vw = 300;
     // var vh = 40;		// defines number of faces
@@ -215,10 +215,10 @@ LiveModel = function() {
 	// }
 
 
-	model.computeFaceNormals();
-	model.computeVertexNormals();
+	// model.computeFaceNormals();
+	// model.computeVertexNormals();
 	
-	model.normalsNeedUpdate = true;
+	//  model.normalsNeedUpdate = true;
     	model.verticesNeedUpdate = true;
     	return true;
     };
