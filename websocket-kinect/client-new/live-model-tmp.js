@@ -8,8 +8,10 @@ LiveModel = function() {
     var offw = inputW/2;
 
 
-    var vh = 200;		// defines number of faces
-    var vw = 300;
+     //var vh = 200;		// defines number of faces
+     //var vw = 300;
+    var vh = 40;		// defines number of faces
+    var vw = 50;
 
 
     var dy = inputH / vh;
@@ -35,44 +37,72 @@ LiveModel = function() {
     var vertexCount = model.vertices.length;
 
     
-    for (j=0; j<vh-1; j++) {
-	for (i=0; i<vw-1; i++) {
+     for (j=0; j<vh-1; j++) {
+     	 for (i=0; i<vw-1; i++) {
 
 	    var a = j*vw+i;
 	    var b = (j+1)*vw+i;
 	    var c = (j*vw+i+1);
 	    var d = (j+1)*vw+i+1;
 	    
+	    var iu = 1/vw;
+	    var ju = 1/vh;
+
 	    model.faces.push( new THREE.Face3(a,b,c) );
 	    model.faces.push( new THREE.Face3(c,b,d) );
 
-	    model.faceVertexUvs[0].push( [ new THREE.Vector2(0,0),
-					   new THREE.Vector2(1,1),
-					   new THREE.Vector2(1,0) ] );
-	    model.faceVertexUvs[0].push( [ new THREE.Vector2(0,0),
-					   new THREE.Vector2(1,1),
-					   new THREE.Vector2(1,0) ] );
+	    // model.faceVertexUvs[0].push( [ new THREE.Vector2(0,0),
+	    // 				   new THREE.Vector2(1,1),
+	    // 				   new THREE.Vector2(1,0) ] );
+	    // model.faceVertexUvs[0].push( [ new THREE.Vector2(0,0),
+	    // 				   new THREE.Vector2(1,1),
+	    // 				   new THREE.Vector2(1,0) ] );
+
+	    model.faceVertexUvs[0].push( [ new THREE.Vector2(-(vw-i)/vw,.5*(vh-j)/vh),
+					   new THREE.Vector2(-(vw-i)/vw,.5*(vh-j-1)/vh),
+					   new THREE.Vector2(-(vw-i-1)/vw,.5*(vh-j)/vh) ] );
+	    model.faceVertexUvs[0].push( [ new THREE.Vector2(-(vw-i-1)/vw,.5*(vh-j)/vh),
+					   new THREE.Vector2(-(vw-i)/vw,.5*(vh-j-1)/vh),
+					   new THREE.Vector2(-(vw-i-1)/vw,.5*(vh-j-1)/vh) ] );
+
+
 
 	}
     }
     
-//    var foo = new THREE.TetrahedronGeometry(100);
-    console.log("vertex count: " + model.vertices.length);
-    console.log("face count: " + model.faces.length);
-    console.log("faceVertexUvs[0] count: " + model.faceVertexUvs[0].length);
-    console.log("faceVertexUvs[0][0] count: " + model.faceVertexUvs[0][0].length);
 
-    model.computeBoundingSphere();
-    model.computeFaceNormals();
-    model.computeVertexNormals();
-    model.computeTangents();
     THREE.GeometryUtils.normalizeUVs(model);
 
 
-    var material = new THREE.MeshBasicMaterial();
-    material.wireframe=true;
+    //model.computeBoundingSphere();
+    model.computeFaceNormals();
+    model.computeVertexNormals();
+    // model.computeTangents();
+    // model.tangentsNeedUpdate = true;
+    // model.normalsNeedUpdate = true;
+    // model.uvsNeedUpdate = true;
+    
 
+    // var material = new THREE.MeshBasicMaterial( { map : new THREE.Texture() } );
+    //var material = new THREE.MeshBasicMaterial();
+    // material.wireframe = true;
+    // material.color=new THREE.Color(0x0F0F0F);
+    // new THREE.DataTexture([], inputW, inputH, THREE.RGBFormat);
+
+    var initColor = new THREE.Color( 0x00ff00 );
+    // initColor.setHSV( 0.25, 0.85, 0.5 );
+
+    var texture = THREE.ImageUtils.generateDataTexture(inputW, inputH, initColor );
+    // texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+    // texture.repeat.set(25,25);
+    // texture.anisotropy = 16;
+
+    var material = new THREE.MeshBasicMaterial( { map : texture });
+    // var material = new THREE.MeshPhongMaterial( 
+    // 	{ map : texture, color: 0xffffff, specular: 0x111111 }
+    // );
     var faceMesh = new THREE.Mesh(model, material);
+    // faceMesh.receiveShadow = true;
 
     this.sceneContents = function() {
 	return faceMesh;
@@ -96,10 +126,18 @@ LiveModel = function() {
     	var rgbByteIdx = numData+5;
 
 	// image data to texture the mesh
-	material.map = new THREE.DataTexture(new Uint8Array(bytes, rgbByteIdx), 
-					     inputW, inputH, THREE.RGBFormat);
+	// var texture = new THREE.DataTexture(new Uint8Array(bytes, rgbByteIdx), 
+	//  				    inputW, inputH, THREE.RGBFormat);
 
-	material.needsUpdate = true;
+
+	// material.map = new THREE.DataTexture(new Uint8Array(bytes, rgbByteIdx), 
+	// 				     inputW, inputH, THREE.RGBFormat);
+	// material.needsUpdate = true;
+	
+	texture.image.data = new Uint8Array(bytes, rgbByteIdx);
+	texture.needsUpdate = true;
+	//material.needsUpdate = true;
+	
 
 	var v=0;
 	var x,y;
@@ -120,6 +158,7 @@ LiveModel = function() {
 	    
 	    byteIdx+=skip;
 	}
+
 
 
 
@@ -148,7 +187,10 @@ LiveModel = function() {
 	// }
 
 
-
+	model.computeFaceNormals();
+	model.computeVertexNormals();
+	
+	model.normalsNeedUpdate = true;
     	model.verticesNeedUpdate = true;
     	return true;
     };

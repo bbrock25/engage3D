@@ -28,8 +28,11 @@
 	    stats.domElement.id = 'stats';
 	    document.body.appendChild(stats.domElement);
 	} 
-	bgColour = 0x000000;
-	fgColour = 0xffffff;
+	// bgColour = 0x000000;
+	// fgColour = 0xffffff;
+	
+	bgColour = 0xFF0000;
+	fgColour = 0x000000;
 
 	Transform.prototype.t = Transform.prototype.transformPoint;
 	
@@ -56,7 +59,12 @@
 	if (params.fog) scene.fog = new THREE.FogExp2(bgColour, 0.00033);
 	
 	
-	light = new THREE.AmbientLight(0x404040);
+	light = new THREE.AmbientLight(0xFFFFFF);
+	// light = new THREE.DirectionalLight( 0xffffff, 0.35 );
+	// light.color.setHSV( 0.3, 0.95, 1 );
+	// light.position.set( 0, -100, 0 );
+
+
 	scene.add(light);
 
 	// kinect stuff
