@@ -39,7 +39,20 @@ LiveModel = function() {
 
     var vertexCount = model.vertices.length;
 
-    
+    // var x;
+    // var minx=inputW,maxx=-inputW,miny=inputH,maxy=inputH;
+    // for (v=0; v<vertexCount; v++)
+    // {
+    // 	if (model.vertices[v].x < minx) minx = model.vertices[v].x;
+    // 	if (model.vertices[v].x > maxx) maxx = model.vertices[v].x;
+    // 	if (model.vertices[v].y < miny) miny = model.vertices[v].y;
+    // 	if (model.vertices[v].y > maxy) maxy = model.vertices[v].y;
+    // }
+
+    // console.log("bounds: " + minx + " - " + maxx + ";" + miny + " - " + maxy);
+
+    // var minu=10,minv=10,maxu=-10,maxv=-10;
+
     for (j=0; j<vh-1; j++) {
      	for (i=0; i<vw-1; i++) {
 
@@ -55,15 +68,29 @@ LiveModel = function() {
 	    model.faces.push( new THREE.Face3(c,b,d) );
 	    
 	    // gotta fix this
-	    var _ax = (0.5*model.vertices[a].x+offw)/inputW;
-	    var _ay = ((0.5*model.vertices[a].y+offh)/inputH-.4)%1;
-	    var _bx = (0.5*model.vertices[b].x+offw)/inputW;
-	    var _by = ((0.5*model.vertices[b].y+offh)/inputH-.4)%1;
-	    var _cx = (0.5*model.vertices[c].x+offw)/inputW;
-	    var _cy = ((0.5*model.vertices[c].y+offh)/inputH-.4)%1;
-	    var _dx = (0.5*model.vertices[d].x+offw)/inputW;
-	    var _dy = ((0.5*model.vertices[d].y+offh)/inputH-.4)%1;
+	    var _ax = 0.5*(model.vertices[a].x+inputW)/inputW;
+	    var _ay = 0.5*(model.vertices[a].y+inputH)/inputH;
+	    var _bx = 0.5*(model.vertices[b].x+inputW)/inputW;
+	    var _by = 0.5*(model.vertices[b].y+inputH)/inputH;
+	    var _cx = 0.5*(model.vertices[c].x+inputW)/inputW;
+	    var _cy = 0.5*(model.vertices[c].y+inputH)/inputH;
+	    var _dx = 0.5*(model.vertices[d].x+inputW)/inputW;
+	    var _dy = 0.5*(model.vertices[d].y+inputH)/inputH;
 
+	    
+	    // if (_ax < minu) minu=_ax;
+	    // if (_ax > maxu) maxu=_ax;
+	    // if (_bx < minu) minu=_bx;
+	    // if (_bx > maxu) maxu=_bx;
+	    // if (_cx < minu) minu=_cx;
+	    // if (_cx > maxu) maxu=_cx;
+	    // if (_ay < minv) minv=_ay;
+	    // if (_ay > maxv) maxv=_ay;
+	    // if (_by < minv) minv=_by;
+	    // if (_by > maxv) maxv=_by;
+	    // if (_cy < minv) minv=_cy;
+	    // if (_cy > maxv) maxv=_cy;
+	    
 
 	    // model.faceVertexUvs[0].push( [ new THREE.Vector2(0,0),
 	    // 				   new THREE.Vector2(1,1),
@@ -91,6 +118,7 @@ LiveModel = function() {
 	}
     }
     
+    // console.log("uv bounds: " + minu + " - " + maxu + ";" + minv + " - " + maxv);
 
     THREE.GeometryUtils.normalizeUVs(model);
 
@@ -154,7 +182,8 @@ LiveModel = function() {
 	// 				     inputW, inputH, THREE.RGBFormat);
 	// material.needsUpdate = true;
 	
-	texture.image.data = new Uint8Array(bytes, rgbByteIdx);
+	// texture.image.data = new Uint8Array(bytes, rgbByteIdx);
+	texture.image.data = bytes.subarray(rgbByteIdx);
 	texture.needsUpdate = true;
 	//material.needsUpdate = true;
 	
@@ -179,9 +208,11 @@ LiveModel = function() {
 		// 	depth = b;
 		// }
 
-		var depth = (128 - abyte)*10;
-		
-		model.vertices[v].setZ(depth);
+		//var depth = (128 - abyte)*10;
+		//model.vertices[v].setZ(depth);
+
+		//model.vertices[v].setZ((128-abyte)*10);
+		model.vertices[v].setZ(-abyte*10);
 		v = v+1;
 	    }
 	    
@@ -219,7 +250,7 @@ LiveModel = function() {
 	// model.computeFaceNormals();
 	// model.computeVertexNormals();
 	
-	//  model.normalsNeedUpdate = true;
+	// model.normalsNeedUpdate = true;
     	model.verticesNeedUpdate = true;
     	return true;
     };
