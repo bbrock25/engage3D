@@ -77,8 +77,12 @@
 	down = false;
 	dynaPan = 0;
 	sx = sy = 0;
-	camZRange = [2000, 200];
-	camZ = 880;
+//	camZRange = [2000, 200];
+//	camZ = 880;
+	camZRange = [4000, 200];
+	camZ = 3000;
+
+
 	camYRange = [-600, 600];
 	camT = new Transform();
 	animate = function() {
