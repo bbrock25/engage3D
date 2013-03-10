@@ -222,13 +222,28 @@ LiveModel = function() {
     	model.verticesNeedUpdate = true;
     	return true;
     };
-
+    
+    var OF_BACKEND = true;
+	var opt = {
+	    url: 'localhost',
+	    port: '9000',
+	    protocol: 'of-protocol',
+	    on_update: undefined,
+	    on_open: undefined,
+	    on_close: undefined
+	  };
 
     this.connect = function(url) {
     	var reconnectDelay, ws;
     	reconnectDelay = 10;
     	console.log("Connecting to " + url + " ...");
-    	ws = new WebSocket(url);
+    	//ws = new WebSocket(url);
+    	
+    	if(OF_BACKEND)
+	    	ws = new WebSocket('ws://'+opt.url+':'+opt.port+'/', opt.protocol );
+    	else
+    		ws = new WebSocket(url);
+
     	ws.binaryType = 'arraybuffer';
     	seenKeyFrame = false;
     	ws.onopen = function() {
@@ -236,7 +251,7 @@ LiveModel = function() {
     	};
     	ws.onclose = function() { // TODO: fix the reconnect
     	    console.log("Disconnected: retrying in " + reconnectDelay + "s");
-    	    return setTimeout(this.connect, reconnectDelay(1000));
+    	    return setTimeout(this.connect, reconnectDelay*100);
     	};
     	return ws.onmessage = dataCallback;
     };
