@@ -7,9 +7,13 @@ LiveModel = function() {
     var offh = inputH/2;
     var offw = inputW/2;
 
+    var vh = 160;		// make sure inpuH/W are evenly
+				// divisible by vh/vw
+    var vw = 158;
 
-    var vh = 200;
-    var vw = 200;
+
+    // var vh = 200;
+    // var vw = 200;
 
     // var vh = 200;		// defines number of faces
     // var vw = 300;
@@ -17,8 +21,8 @@ LiveModel = function() {
     // var vw = 50;
 
 
-    var dy = inputH / vh;
-    var dx = inputW / vw;
+    var dy = inputH / (vh-1);
+    var dx = inputW / (vw-1);
 
 
     var model = new THREE.Geometry();
@@ -51,7 +55,7 @@ LiveModel = function() {
 
     // console.log("bounds: " + minx + " - " + maxx + ";" + miny + " - " + maxy);
 
-    // var minu=10,minv=10,maxu=-10,maxv=-10;
+    var minu=10,minv=10,maxu=-10,maxv=-10;
 
     for (j=0; j<vh-1; j++) {
      	for (i=0; i<vw-1; i++) {
@@ -67,7 +71,6 @@ LiveModel = function() {
 	    model.faces.push( new THREE.Face3(a,b,c) );
 	    model.faces.push( new THREE.Face3(c,b,d) );
 	    
-	    // gotta fix this
 	    var _ax = 0.5*(model.vertices[a].x+inputW)/inputW;
 	    var _ay = 0.5*(model.vertices[a].y+inputH)/inputH;
 	    var _bx = 0.5*(model.vertices[b].x+inputW)/inputW;
@@ -78,18 +81,18 @@ LiveModel = function() {
 	    var _dy = 0.5*(model.vertices[d].y+inputH)/inputH;
 
 	    
-	    // if (_ax < minu) minu=_ax;
-	    // if (_ax > maxu) maxu=_ax;
-	    // if (_bx < minu) minu=_bx;
-	    // if (_bx > maxu) maxu=_bx;
-	    // if (_cx < minu) minu=_cx;
-	    // if (_cx > maxu) maxu=_cx;
-	    // if (_ay < minv) minv=_ay;
-	    // if (_ay > maxv) maxv=_ay;
-	    // if (_by < minv) minv=_by;
-	    // if (_by > maxv) maxv=_by;
-	    // if (_cy < minv) minv=_cy;
-	    // if (_cy > maxv) maxv=_cy;
+	    if (_ax < minu) minu=_ax;
+	    if (_ax > maxu) maxu=_ax;
+	    if (_bx < minu) minu=_bx;
+	    if (_bx > maxu) maxu=_bx;
+	    if (_cx < minu) minu=_cx;
+	    if (_cx > maxu) maxu=_cx;
+	    if (_ay < minv) minv=_ay;
+	    if (_ay > maxv) maxv=_ay;
+	    if (_by < minv) minv=_by;
+	    if (_by > maxv) maxv=_by;
+	    if (_cy < minv) minv=_cy;
+	    if (_cy > maxv) maxv=_cy;
 	    
 
 	    // model.faceVertexUvs[0].push( [ new THREE.Vector2(0,0),
@@ -118,7 +121,7 @@ LiveModel = function() {
 	}
     }
     
-    // console.log("uv bounds: " + minu + " - " + maxu + ";" + minv + " - " + maxv);
+    console.log("uv bounds: " + minu + " - " + maxu + ";" + minv + " - " + maxv);
 
     THREE.GeometryUtils.normalizeUVs(model);
 
@@ -184,20 +187,25 @@ LiveModel = function() {
 	
 	// texture.image.data = new Uint8Array(bytes, rgbByteIdx);
 	texture.image.data = bytes.subarray(rgbByteIdx);
+	// console.log("image data: " + texture.image.data.length );
+
 	texture.needsUpdate = true;
 	//material.needsUpdate = true;
 	
 
 	var v=0;
 	var x,y;
-	var skip = Math.floor(dy)*inputW;
+
+	var skipY = numData/vh;
+	var skipX = inputW / vw;
+	console.log("skipX: " + skipX + "; skipY: " + skipY);
+	var mindepth=1000;
+	var maxdepth=-1000;
 
 	for (y=0; y<vh; y++) {
 	    for (x=0; x<vw; x++) {
 		
-		var byteOffset = Math.floor(x*dx)
-
-		var abyte= bytes[byteIdx+byteOffset];
+		var abyte= bytes[byteIdx+x*skipX];
 		
 		// var depth =128;
 
@@ -212,14 +220,23 @@ LiveModel = function() {
 		//model.vertices[v].setZ(depth);
 
 		//model.vertices[v].setZ((128-abyte)*10);
-		model.vertices[v].setZ(-abyte*10);
+		//model.vertices[v].setZ((128-abyte)*10);
+		// var depth = (128-abyte)*10;
+		var depth = abyte/128 * 1000;
+
+		if (abyte > maxdepth) maxdepth=abyte;
+		if (abyte < mindepth) mindepth=abyte;
+		
+		model.vertices[v].setZ(1000-depth);
 		v = v+1;
 	    }
 	    
-	    byteIdx+=skip;
+	    byteIdx+=skipY;
 	}
 
-
+	console.log("vertexCount: " + vertexCount + "; v: " + v);
+	console.log("byteIdx: " + byteIdx + "; " + rgbByteIdx);
+	console.log("depths: " + mindepth + "=" + maxdepth);
 
 
 	// works when inputH,inputW = vh,vw
@@ -249,14 +266,13 @@ LiveModel = function() {
 
 	// model.computeFaceNormals();
 	// model.computeVertexNormals();
-	
 	// model.normalsNeedUpdate = true;
     	model.verticesNeedUpdate = true;
     	return true;
     };
     
     var OF_BACKEND = true;
-
+    
     var opt = {
 	url: 'localhost',
 	port: '9000',
