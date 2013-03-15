@@ -256,6 +256,7 @@ LiveModel = function() {
     };
     
     var OF_BACKEND = true;
+
     var opt = {
 	url: 'localhost',
 	port: '9000',
@@ -272,6 +273,7 @@ LiveModel = function() {
     	//ws = new WebSocket(url);
     	
     	if(OF_BACKEND)
+
 	    ws = new WebSocket('ws://'+opt.url+':'+opt.port+'/', opt.protocol );
     	else
     	    ws = new WebSocket(url);
