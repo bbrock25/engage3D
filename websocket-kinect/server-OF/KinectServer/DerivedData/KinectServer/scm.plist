@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>FoundWorkingCopyPaths</key>
+	<array>
+		<string>/Users/williambrock/OpenFrameworks/of_v0073_osx_release/addons/ofxLibwebsockets</string>
+		<string>/Users/williambrock/OpenFrameworks/of_v0073_osx_release/addons/ofxKinect</string>
+		<string>/Users/williambrock/Desktop/engageCV/engage3D_round2/engage3D/websocket-kinect</string>
+	</array>
+	<key>LastWorkingCopyScanDate</key>
+	<date>2013-03-11T23:55:59Z</date>
+	<key>Version</key>
+	<integer>3</integer>
+</dict>
+</plist>

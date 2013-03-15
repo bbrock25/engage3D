@@ -1,0 +1,86 @@
+Contents of /System/Library/Frameworks/Carbon.framework/Headers/Carbon.h
+4.1 (tags/Apple/clang-421.11.66) (based on LLVM 3.1svn)
+i386-apple-darwin11.4.2
+-x
+c
+-arch
+i386
+-fmessage-length=0
+-fpascal-strings
+-O0
+-fasm-blocks
+-g
+-mssse3
+-I/Users/williambrock/OpenFrameworks/of_v0073_osx_release/apps/myApps/mySketch/bin/include
+-I../../../libs/openFrameworks
+-I../../../libs/openFrameworks/3d
+-I../../../libs/openFrameworks/app
+-I../../../libs/openFrameworks/communication
+-I../../../libs/openFrameworks/events
+-I../../../libs/openFrameworks/gl
+-I../../../libs/openFrameworks/graphics
+-I../../../libs/openFrameworks/math
+-I../../../libs/openFrameworks/sound
+-I../../../libs/openFrameworks/types
+-I../../../libs/openFrameworks/utils
+-I../../../libs/openFrameworks/video
+-I../../../libs/poco/include
+-I../../../libs/freetype/include
+-I../../../libs/freetype/include/freetype2
+-I../../../libs/fmodex/include
+-I../../../libs/glew/include
+-I../../../libs/FreeImage/include
+-I../../../libs/tess2/include
+-I../../../libs/cairo/include/cairo
+-I../../../libs/rtAudio/include
+-I../../../addons/ofxKinect/libs
+-I../../../addons/ofxKinect/libs/libfreenect
+-I../../../addons/ofxKinect/libs/libfreenect/lib
+-I../../../addons/ofxKinect/libs/libusb
+-I../../../addons/ofxKinect/libs/libusb/osx
+-I../../../addons/ofxKinect/libs/libusb/osx/include
+-I../../../addons/ofxKinect/libs/libusb/osx/include/libusb-1.0
+-I../../../addons/ofxKinect/libs/libusb/osx/libs
+-I../../../addons/ofxKinect/libs/libusb/win
+-I../../../addons/ofxKinect/libs/libusb/win/inf
+-I../../../addons/ofxKinect/libs/libusb/win/inf/xbox nui audio
+-I../../../addons/ofxKinect/libs/libusb/win/inf/xbox nui audio/amd64
+-I../../../addons/ofxKinect/libs/libusb/win/inf/xbox nui audio/ia64
+-I../../../addons/ofxKinect/libs/libusb/win/inf/xbox nui audio/license
+-I../../../addons/ofxKinect/libs/libusb/win/inf/xbox nui audio/license/libusb-win32
+-I../../../addons/ofxKinect/libs/libusb/win/inf/xbox nui audio/x86
+-I../../../addons/ofxKinect/libs/libusb/win/inf/xbox nui camera
+-I../../../addons/ofxKinect/libs/libusb/win/inf/xbox nui camera/amd64
+-I../../../addons/ofxKinect/libs/libusb/win/inf/xbox nui camera/ia64
+-I../../../addons/ofxKinect/libs/libusb/win/inf/xbox nui camera/license
+-I../../../addons/ofxKinect/libs/libusb/win/inf/xbox nui camera/license/libusb-win32
+-I../../../addons/ofxKinect/libs/libusb/win/inf/xbox nui camera/x86
+-I../../../addons/ofxKinect/libs/libusb/win/inf/xbox nui motor
+-I../../../addons/ofxKinect/libs/libusb/win/inf/xbox nui motor/amd64
+-I../../../addons/ofxKinect/libs/libusb/win/inf/xbox nui motor/ia64
+-I../../../addons/ofxKinect/libs/libusb/win/inf/xbox nui motor/license
+-I../../../addons/ofxKinect/libs/libusb/win/inf/xbox nui motor/license/libusb-win32
+-I../../../addons/ofxKinect/libs/libusb/win/inf/xbox nui motor/x86
+-I../../../addons/ofxKinect/src
+-I../../../addons/ofxLibwebsockets/libs
+-I../../../addons/ofxLibwebsockets/libs/jsoncpp
+-I../../../addons/ofxLibwebsockets/libs/jsoncpp/json
+-I../../../addons/ofxLibwebsockets/libs/libwebsockets
+-I../../../addons/ofxLibwebsockets/libs/libwebsockets/data
+-I../../../addons/ofxLibwebsockets/libs/libwebsockets/include
+-I../../../addons/ofxLibwebsockets/libs/libwebsockets/lib
+-I../../../addons/ofxLibwebsockets/libs/libwebsockets/lib/osx
+-I../../../addons/ofxLibwebsockets/libs/libwebsockets/lib/win32
+-I../../../addons/ofxLibwebsockets/libs/ofxLibwebsockets
+-I../../../addons/ofxLibwebsockets/libs/ofxLibwebsockets/include
+-I../../../addons/ofxLibwebsockets/libs/ofxLibwebsockets/include/ofxLibwebsockets
+-I../../../addons/ofxLibwebsockets/libs/ofxLibwebsockets/src
+-I../../../addons/ofxLibwebsockets/libs/openssl
+-I../../../addons/ofxLibwebsockets/libs/openssl/lib
+-I../../../addons/ofxLibwebsockets/libs/openssl/lib/osx
+-I../../../addons/ofxLibwebsockets/libs/openssl/lib/win32
+-I../../../addons/ofxLibwebsockets/libs/openssl/openssl
+-I../../../addons/ofxLibwebsockets/src
+-F/Users/williambrock/OpenFrameworks/of_v0073_osx_release/apps/myApps/mySketch/bin
+-F/Users/williambrock/OpenFrameworks/of_v0073_osx_release/apps/myApps/mySketch/../../../libs/glut/lib/osx
+SDK_PRODUCT_BUILD_VERSION=11G63

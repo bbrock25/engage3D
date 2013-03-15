@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>three.js - kinect</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<style>
+		body {
+			font-family: Monospace;
+			background-color: #000000;
+			margin: 0px;
+			overflow: hidden;
+		}
+
+		#info {
+			color: #ffffff;
+
+			font-family: Monospace;
+			font-size: 13px;
+			text-align: center;
+			font-weight: bold;
+
+			position: absolute;
+			top: 0px; width: 100%;
+			padding: 5px;
+		}
+
+		a {
+
+			color: #0040ff;
+
+		}
+	</style>
+</head>
+
+<body>
+
+<script src="js/camara_lucida.js"></script>
+<script src="js/Three.js"></script>
+<script src='js/DAT.GUI.min.js'></script>
+<script src="js/Detector.js"></script>
+<script src="js/Stats.js"></script>
+
+<script id="vs" type="x-shader/x-vertex">
+
+	uniform sampler2D map;
+
+	uniform float width;
+	uniform float height;
+	uniform float nearClipping, farClipping;
+
+	uniform float pointSize;
+	uniform float zOffset;
+
+	varying vec2 vUv;
+
+	const float XtoZ = 1.11146; // tan( 1.0144686 / 2.0 ) * 2.0;
+	const float YtoZ = 0.83359; // tan( 0.7898090 / 2.0 ) * 2.0;
+
+	void main() {
+
+		vUv = vec2( position.x / width, 1.0 - ( position.y / height ) );
+
+		vec4 color = texture2D( map, vUv );
+		float depth = ( color.r + color.g + color.b ) / 3.0;
+
+		// Projection code by @kcmic
+
+		float z = ( 1.0 - depth ) * (farClipping - nearClipping) + nearClipping;
+
+		vec4 pos = vec4(
+			( position.x / width - 0.5 ) * z * XtoZ,
+			( position.y / height - 0.5 ) * z * YtoZ,
+			- z + zOffset,
+			1.0);
+
+		gl_PointSize = pointSize;
+		gl_Position = projectionMatrix * modelViewMatrix * pos;
+
+	}
+
+</script>
+
+<script id="fs" type="x-shader/x-fragment">
+
+	uniform sampler2D map;
+
+	varying vec2 vUv;
+
+	void main() {
+
+		vec4 color = texture2D( map, vUv );
+		gl_FragColor = vec4( color.r, color.g, color.b, smoothstep( 8000.0, -8000.0, gl_FragCoord.z / gl_FragCoord.w ) );
+
+	}
+
+</script>
+
+<script src="js/main_glsl.js"></script>
+
+</body>
+</html>
