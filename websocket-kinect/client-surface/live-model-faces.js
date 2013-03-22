@@ -176,121 +176,64 @@ LiveModel = function() {
     	var byteIdx = 5;
     	var rgbByteIdx = numData+5;
 
-	// image data to texture the mesh
-	// var texture = new THREE.DataTexture(new Uint8Array(bytes, rgbByteIdx), 
-	//  				    inputW, inputH, THREE.RGBFormat);
+		// image data to texture the mesh
+		texture.image.data = bytes.subarray(rgbByteIdx);
+		// console.log("image data: " + texture.image.data.length );
 
-
-	// material.map = new THREE.DataTexture(new Uint8Array(bytes, rgbByteIdx), 
-	// 				     inputW, inputH, THREE.RGBFormat);
-	// material.needsUpdate = true;
-	
-	// texture.image.data = new Uint8Array(bytes, rgbByteIdx);
-	texture.image.data = bytes.subarray(rgbByteIdx);
-	// console.log("image data: " + texture.image.data.length );
-
-	texture.needsUpdate = true;
-	//material.needsUpdate = true;
-	
-
-	var v=0;
-	var x,y;
-
-	var skipY = numData/vh;
-	var skipX = inputW / vw;
-	console.log("skipX: " + skipX + "; skipY: " + skipY);
-	var mindepth=1000;
-	var maxdepth=-1000;
-
-	for (y=0; y<vh; y++) {
-	    for (x=0; x<vw; x++) {
+		texture.needsUpdate = true;
+		//material.needsUpdate = true;
 		
-		var abyte= bytes[byteIdx+x*skipX];
-		
-		// var depth =128;
 
-		// // get local min depth
-		// for (var i=0; i<dx; i++) {
-		//     var b= bytes[byteIdx+byteOffset+i];
-		//     if (b < depth)
-		// 	depth = b;
-		// }
+		var v=0;
+		var x,y;
 
-		//var depth = (128 - abyte)*10;
-		//model.vertices[v].setZ(depth);
+		var skipY = numData/vh;
+		var skipX = inputW / vw;
+		//console.log("skipX: " + skipX + "; skipY: " + skipY);
+		var mindepth=1000;
+		var maxdepth=-1000;
 
-		//model.vertices[v].setZ((128-abyte)*10);
-		//model.vertices[v].setZ((128-abyte)*10);
-		// var depth = (128-abyte)*10;
-		var depth = abyte/128 * 1000;
+		for (y=0; y<vh; y++) {
+		    for (x=0; x<vw; x++) {
+			
+			var abyte= bytes[byteIdx+x*skipX];
 
-		if (abyte > maxdepth) maxdepth=abyte;
-		if (abyte < mindepth) mindepth=abyte;
-		
-		model.vertices[v].setZ(1000-depth);
-		v = v+1;
-	    }
-	    
-	    byteIdx+=skipY;
-	}
+			var depth = abyte/128 * 1000;
 
-	console.log("vertexCount: " + vertexCount + "; v: " + v);
-	console.log("byteIdx: " + byteIdx + "; " + rgbByteIdx);
-	console.log("depths: " + mindepth + "=" + maxdepth);
+			if (abyte > maxdepth) maxdepth=abyte;
+			if (abyte < mindepth) mindepth=abyte;
+			
+			model.vertices[v].setZ(1000-depth);
+			v = v+1;
+		    }
+		    
+		    byteIdx+=skipY;
+		}
 
-
-	// works when inputH,inputW = vh,vw
-	// for (y=0; y<inputH; y++) {
-	//     for (x=0; x<inputW; x++) {
-
-	// 	var abyte= bytes[byteIdx];
-	// 	var vtx = model.vertices[v];
-
-	// 	// if (abyte == 255) {
-	// 	//     vtx.setY(-5000);
-	// 	// }
-	// 	// else {
-	// 	//     var depth = (128 - abyte)*10;
-	// 	//     vtx.setZ(depth);
-	// 	//     vtx.setY(usualY[v]);
-	// 	// }
-
-	// 	var depth = (128 - abyte)*10;
-	// 	vtx.setZ(depth);
-
-	// 	v++;
-	// 	byteIdx++;
-	//     }
-	// }
-
-
-	// model.computeFaceNormals();
-	// model.computeVertexNormals();
-	// model.normalsNeedUpdate = true;
     	model.verticesNeedUpdate = true;
     	return true;
     };
-    
-    var OF_BACKEND = true;
-    
-    var opt = {
-	url: 'localhost',
-	port: '9000',
-	protocol: 'of-protocol',
-	on_update: undefined,
-	on_open: undefined,
-	on_close: undefined
-    };
 
+    var ws;
     this.connect = function(url) {
-    	var reconnectDelay, ws;
-    	reconnectDelay = 10;
-    	console.log("Connecting to " + url + " ...");
-    	//ws = new WebSocket(url);
-    	
-    	if(OF_BACKEND)
+		var reconnectDelay, OF_BACKEND, opt;
 
-	    ws = new WebSocket('ws://'+opt.url+':'+opt.port+'/', opt.protocol );
+	    OF_BACKEND = true;
+	    
+	    opt = {
+			url: 'localhost',
+			port: '9000',
+			protocol: 'of-protocol',
+			on_update: undefined,
+			on_open: undefined,
+			on_close: undefined
+	    };    	
+
+	    reconnectDelay = 10;
+    	console.log("Connecting to " + url + " ...");
+		
+    	if(OF_BACKEND)
+		    ws = new WebSocket('ws://'+opt.url+':'+opt.port+'/', opt.protocol );
     	else
     	    ws = new WebSocket(url);
 
@@ -301,10 +244,22 @@ LiveModel = function() {
     	};
     	ws.onclose = function() { // TODO: fix the reconnect
     	    console.log("Disconnected: retrying in " + reconnectDelay + "s");
-    	    return setTimeout(this.connect, reconnectDelay*100);
+    	    return setTimeout(this.connect, 10);
     	};
-    	return ws.onmessage = dataCallback;
+    	console.log('.');
+    	ws.onmessage = dataCallback;
     };
+
+    this.sendSlider = function(sliderValue){
+	  var msg = {
+		    type: "message",
+		    depthCenter: parseInt(sliderValue),
+					};
+    	ws.send(JSON.stringify(msg));
+
+    }
+
+
 
     
     var pd=[];			// pan data -- TODO: get rid of this

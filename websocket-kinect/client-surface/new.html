@@ -36,6 +36,13 @@ a { color: #fff; }
 <script src="live-model-faces.js"></script>
 <script src="lmscene.js"></script>
 
+<div style="background-color:white;">
+	<form id="form" onsubmit="return false">
+		<input type="range" id="slider" value="10" name="range">
+		<input type="submit" value="apply" id="apply">
+		<div id="output"></div> 
+	</form>
+</div>
 </head>
 <body>
 <div id="noWebGL">

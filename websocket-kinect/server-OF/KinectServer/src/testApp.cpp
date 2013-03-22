@@ -1,6 +1,7 @@
 #include "testApp.h"
 #include "unistd.h"
-#define DEPTH_MAX 4000
+#include <stdlib.h>
+#define DEPTH_MAX 10000
 void testApp::setup()
 {
 	ofSetLogLevel(OF_LOG_VERBOSE);
@@ -16,7 +17,7 @@ void testApp::setup()
 	init_out_pix();
   
 	kinect.setRegistration(true);
-	kinect.setDepthClipping(500, DEPTH_MAX); //mm (50cm - 4mt)
+	kinect.setDepthClipping(100, DEPTH_MAX); //mm (50cm - DEPTH_MAX)
 	kinect.enableDepthNearValueWhite(true);
   
 	// ir:false, rgb:true, texture:true
@@ -28,7 +29,7 @@ void testApp::setup()
   ofxLibwebsockets::defaultServerOptions();
 	opt.port = 9000;
 	opt.protocol = "of-protocol";
-	opt.documentRoot = ofToDataPath("web/app_three", true);
+//	opt.documentRoot = ofToDataPath("web/app_three", true);
   
 	bool connected = server.setup( opt );
   
@@ -48,22 +49,21 @@ void testApp::update()
 	if ( ! kinect.isFrameNew() )
 		return;
   
-	uint16_t *raw_depth_pix = kinect.getRawDepthPixels();
-	ofPixels depth_pix = kinect.getDepthPixelsRef();
-	depth_pix.resizeTo( out_pix );
+//	uint16_t *raw_depth_pix = kinect.getRawDepthPixels();
+//	ofPixels depth_pix = kinect.getDepthPixelsRef();
+//	depth_pix.resizeTo( out_pix );
   
 	int w = 632;
 	int h = 480;
   int const KB_SIZE = 5 + w*h + 3*w*h;
 
-  
   UInt8 * kinect_buffer = new UInt8[KB_SIZE];
   memset(kinect_buffer, 0, KB_SIZE);
   kinect_buffer[0] = 1;
   kinect_buffer[1] = kinect_buffer[2] = kinect_buffer[3] = kinect_buffer[4] = 250;
   
-	ofPixels rgbd_pix;//storing a scaled value of depth in the alpha value of ofPixel
-	rgbd_pix.allocate(w, h, OF_PIXELS_BGRA);//4 -> RGBA (RGBD)
+//	ofPixels rgbd_pix;//storing a scaled value of depth in the alpha value of ofPixel
+//	rgbd_pix.allocate(w, h, OF_PIXELS_BGRA);//4 -> RGBA (RGBD)
   
   int depth_idx = 5;
   int rgb_idx = 5 + w*h;
@@ -77,8 +77,8 @@ void testApp::update()
       ofColor c = kinect.getColorAt(x,y);
       ofVec3f v = kinect.getWorldCoordinateAt(x, y);
       
-      UInt8 depth = v[2]/10000*255;
-      depth = (depth == 0 || depth > DEPTH_MAX) ? DEPTH_MAX: depth;
+      UInt8 depth = v[2]/DEPTH_MAX*255;
+      depth = (depth == 0 || depth > DEPTH_MAX) ? 255: depth;
       
       kinect_buffer[depth_idx] = depth;
       kinect_buffer[rgb_idx+0] = c[0];
@@ -102,10 +102,10 @@ void testApp::update()
 //  unsigned char* pixPtr = rgbd_pix.getPixels();
 //	server.sendBinary( rgbd_pix, rgbd_pix.size() );
 
-  usleep(50000);
+  usleep(frame_rate);
   server.sendBinary(kinect_buffer, KB_SIZE);
 
-  rgbd_pix.clear();
+//  rgbd_pix.clear();
   delete [] kinect_buffer;
 }
 
@@ -146,6 +146,7 @@ void testApp::init_out_pix()
 void testApp::onConnect( ofxLibwebsockets::Event& args )
 {
 	ofLog(OF_LOG_NOTICE, " ### on connected");
+  frame_rate = 50000;
 }
 
 void testApp::onOpen( ofxLibwebsockets::Event& args )
@@ -171,11 +172,17 @@ void testApp::onMessage( ofxLibwebsockets::Event& args )
 	// trace out string messages or JSON messages!
 	if ( args.json != NULL)
 	{
+    string int_str = args.json["depthCenter"].toStyledString();
+    int_str.erase(std::remove(int_str.begin(), int_str.end(), '\n'), int_str.end());
+    int value = std::atoi(int_str.c_str());
+    frame_rate = value*1000;
 		ofLog(OF_LOG_NOTICE, "new JSON message: "
           + args.json.toStyledString()
 //          + " from "
 //          + args.conn.getClientName()
           );
+    
+
 	}
 	else
 	{

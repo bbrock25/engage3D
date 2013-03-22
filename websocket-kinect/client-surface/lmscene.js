@@ -13,7 +13,6 @@
 	    credits: 1,
 	    ws: "ws://" + "localhost:9000"
 	};
-
 	// build page
 	wls = window.location.search;
 	_ref = wls.substring(1).split('&');
@@ -142,7 +141,20 @@
 	$(renderer.domElement).on('mousewheel', doCamZoom);
 
 	// kinect stuff
-	return kmodel.connect(params.ws);
+	kmodel.connect();
+
+	var val = $('#slider').val();
+	output 	= $('#output');
+	output.html(val);
+
+	$('#slider').on('mouseup',function(e){
+	    output.html(this.value);
+	    kmodel.sendSlider(this.value);
+	});
+
+
+
+	return 1;
     });
 
 }).call(this);
