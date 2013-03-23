@@ -221,8 +221,8 @@ LiveModel = function() {
 	    OF_BACKEND = true;
 	    
 	    opt = {
-			url: 'localhost',
-			port: '9000',
+			url: '10.18.14.2',
+			port: '9001',
 			protocol: 'of-protocol',
 			on_update: undefined,
 			on_open: undefined,

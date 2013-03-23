@@ -141,7 +141,7 @@
 	$(renderer.domElement).on('mousewheel', doCamZoom);
 
 	// kinect stuff
-	kmodel.connect();
+	kmodel.connect(params.ws);
 
 	var val = $('#slider').val();
 	output 	= $('#output');

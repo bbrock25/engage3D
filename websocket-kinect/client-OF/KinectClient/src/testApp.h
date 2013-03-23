@@ -26,8 +26,10 @@ public:
   
 	ofxKinect kinect;
   ofxLibwebsockets::Server server;
+  ofxLibwebsockets::Client client;
 	ofPixels out_pix;
 	float out_resize_factor;
+  int frame_rate;
   
 	void init_out_pix();
   

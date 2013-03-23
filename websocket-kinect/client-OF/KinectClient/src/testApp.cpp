@@ -24,28 +24,23 @@ void testApp::setup()
 	//kinect.init(false, true, true);
   kinect.init();
 	kinect.open();
+
+  ofxLibwebsockets::ClientOptions options = ofxLibwebsockets::defaultClientOptions();
+  options.host = "10.18.14.2";
+  options.port = 9000;
+  options.protocol = "of-protocol";
+  options.bUseSSL = false;
   
-	ofxLibwebsockets::ServerOptions opt =
-  ofxLibwebsockets::defaultServerOptions();
-	opt.port = 9000;
-	opt.protocol = "of-protocol";
-//	opt.documentRoot = ofToDataPath("web/app_three", true);
-  
-	bool connected = server.setup( opt );
-  
-	// this adds your app as a listener for the server
-	server.addListener(this);
-  
-	ofLog(OF_LOG_NOTICE,
-        "WebSocket server setup at " +
-        ofToString( server.getPort() ) +
-        ( server.usingSSL() ? " with SSL" : " without SSL")
-        );
+  bool connected = client.connect( options );
+
+  client.addListener(this);
+  ofSetFrameRate(60);
+
 }
 
 void testApp::update()
 {
-	kinect.update();
+  kinect.update();
 	if ( ! kinect.isFrameNew() )
 		return;
   
@@ -62,9 +57,6 @@ void testApp::update()
   kinect_buffer[0] = 1;
   kinect_buffer[1] = kinect_buffer[2] = kinect_buffer[3] = kinect_buffer[4] = 250;
   
-//	ofPixels rgbd_pix;//storing a scaled value of depth in the alpha value of ofPixel
-//	rgbd_pix.allocate(w, h, OF_PIXELS_BGRA);//4 -> RGBA (RGBD)
-  
   int depth_idx = 5;
   int rgb_idx = 5 + w*h;
   int depthmin = DEPTH_MAX;
@@ -77,7 +69,7 @@ void testApp::update()
       ofColor c = kinect.getColorAt(x,y);
       ofVec3f v = kinect.getWorldCoordinateAt(x, y);
       
-      UInt8 depth = v[2]/DEPTH_MAX*255;
+      UInt8 depth = v[2]/DEPTH_MAX*255; //TODO: fix this scaling
       depth = (depth == 0 || depth > DEPTH_MAX) ? 255: depth;
       
       kinect_buffer[depth_idx] = depth;
@@ -88,29 +80,17 @@ void testApp::update()
       rgb_idx += 3;
     }
   }
-  /*server.send(
-              ofToString( rgbd_pix.getWidth() )
-              +":"+
-              ofToString( rgbd_pix.getHeight() )
-              +":"+
-              ofToString( rgbd_pix.getNumChannels() )
-              +":"+
-              ofToString( rgbd_pix.size() )
-              +": FRAME RATE: "+
-              ofToString( ofGetFrameRate() )
-              );*/
-//  unsigned char* pixPtr = rgbd_pix.getPixels();
-//	server.sendBinary( rgbd_pix, rgbd_pix.size() );
 
-  usleep(frame_rate);
-  server.sendBinary(kinect_buffer, KB_SIZE);
-
-//  rgbd_pix.clear();
+  client.sendBinary(kinect_buffer, KB_SIZE);
   delete [] kinect_buffer;
 }
 
+
+
 void testApp::draw()
 {
+
+  //  client.send("hello");
   
 	ofBackground(0);
 	ofSetColor(255);
@@ -122,7 +102,7 @@ void testApp::draw()
 	str << "out_resize_factor: " << out_resize_factor
   << " / " << out_pix.getWidth() << " x " << out_pix.getHeight()
   << " / fps " << ofGetFrameRate() << "\n"
-  << "WebSocket server setup at port " << ofToString( server.getPort() )
+  //<< "WebSocket server setup at port " << ofToString( server.getPort() )
   << endl;
   
   ofDrawBitmapString(str.str(), 10, 10);
@@ -146,7 +126,7 @@ void testApp::init_out_pix()
 void testApp::onConnect( ofxLibwebsockets::Event& args )
 {
 	ofLog(OF_LOG_NOTICE, " ### on connected");
-  frame_rate = 50000;
+  //frame_rate = 10;
 }
 
 void testApp::onOpen( ofxLibwebsockets::Event& args )
@@ -174,8 +154,9 @@ void testApp::onMessage( ofxLibwebsockets::Event& args )
 	{
     string int_str = args.json["depthCenter"].toStyledString();
     int_str.erase(std::remove(int_str.begin(), int_str.end(), '\n'), int_str.end());
-    int value = std::atoi(int_str.c_str());
-    frame_rate = value*1000;
+    frame_rate = std::atoi(int_str.c_str());
+    //ofSetFrameRate(frame_rate);
+    cout <<" set frame rate to " << frame_rate << endl;
 		ofLog(OF_LOG_NOTICE, "new JSON message: "
           + args.json.toStyledString()
 //          + " from "
