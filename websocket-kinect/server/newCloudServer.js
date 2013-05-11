@@ -5,7 +5,13 @@ newCloudServer.js
     messages from both the Viewer and the Kincet.
 Author: Forrest Pruitt
 ---------------------------------------------------------*/
-
+/* Note 
+ For Memory Leaks, Memwatch is great:
+ var memwatch = require('memwatch');
+ var hd = new memwatch.HeapDiff();
+ ~CODE TO TEST GOES HERE~
+//var diff = hd.end();
+*/
 
 var WebSocketServer = require('websocket').server;
 var http = require('http');
@@ -43,15 +49,17 @@ var kinectConnection;
 var viewerConnection;
 var kinectConnected=false;
 var viewerConnected=false;
-
+console.log('Listening on port 9000 for the Kinect');
+console.log('Listening on port 9001 for the Viewer');
 //---------------------------------------------
 // Kinect Code
 //---------------------------------------------
 wsKinectServer.on('request', function(request) 
 {
+		console.log('Connected to kinect client.');
     kinectConnection = request.accept('of-protocol', request.origin);
     connections.push(kinectConnection);
-    console.log('Connected to kinect client.');
+		console.log('Connected to kinect client.');
     kinectedConnected=true;
     // This is the most important callback for us, we'll handle
     // all messages from users here.
@@ -73,11 +81,14 @@ wsKinectServer.on('request', function(request)
                 });
             }
         }
-    });
+    //Free up memory?
+		kinectConnection = null;
+		});
 
     kinectConnection.on('close', function(connection) 
     {
-        console.log('Closing connection to Kinect...');
+  		kinectConnection = null;  
+	    console.log('Closing connection to Kinect...');
     });
 
 });
@@ -126,3 +137,7 @@ wsViewerServer.on('request', function(request)
         console.log('Closed connection to viewer.');
     });
 });
+
+
+//var diff = hd.end();
+//console.log(diff);
