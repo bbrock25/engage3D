@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+<script src="/socket.io/socket.io.js"></script>
+<script type="text/javascript" src="js/easyrtc.js"></script>
+<script type="text/javascript" src="js/demo_audio_only.js"></script>
+
+<div id="demoContainer">
+    <div id="connectControls">
+        <button id="connectButton" onclick="connect()">Connect</button>
+        <button id="hangupButton" disabled="disabled" onclick="hangup()">Hangup</button>
+        <!-- <button id="disconnectButton" disabled="disabled" onclick="disconnect()">Disconnect</button> -->
+        <div id="iam">Not yet connected...</div>
+        <br />
+        <strong>Connected users:</strong>
+        <div id="otherClients"></div>
+    </div>
+
+    <!-- Note... this demo should be updated to remove video references -->
+    <div id="videos"> 
+        <video id="callerAudio"></video>
+        <div id="acceptCallBox"> <!-- Should be initially hidden using CSS -->
+            <div id="acceptCallLabel"></div>
+            <button id="callAcceptButton" >Accept</button> <button id="callRejectButton">Reject</button>
+        </div>
+    </div>
+</div>
+</html>
