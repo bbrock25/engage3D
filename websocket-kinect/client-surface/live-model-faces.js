@@ -284,7 +284,7 @@ LiveModel = function() {
 		  depthfocus_value = value;
 		  sc_directives.depthfocus = depthfocus_value;
 		  console.log('sending msg', sc_directives)
-		  //ws.send(JSON.stringify(sc_directives));
+		  ws.send(JSON.stringify(sc_directives));
 		});	
 
 		framerate_controller.onFinishChange(function(value) {
@@ -293,7 +293,7 @@ LiveModel = function() {
 		  framerate_value = value;
 		  sc_directives.framerate = framerate_value;
 		  console.log('sending msg', sc_directives)
-		  //ws.send(JSON.stringify(sc_directives));
+		  ws.send(JSON.stringify(sc_directives));
 		});	
 	};
 
