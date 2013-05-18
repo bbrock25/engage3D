@@ -26,7 +26,8 @@ void testApp::setup()
 	kinect.open();
 
   ofxLibwebsockets::ClientOptions options = ofxLibwebsockets::defaultClientOptions();
-  options.host = "10.18.14.2";
+  options.host = "172.16.97.207";
+  options.host = "localhost";
   options.port = 9000;
   options.protocol = "of-protocol";
   options.bUseSSL = false;
@@ -80,8 +81,8 @@ void testApp::update()
       rgb_idx += 3;
     }
   }
-
   client.sendBinary(kinect_buffer, KB_SIZE);
+
   delete [] kinect_buffer;
 }
 
@@ -148,14 +149,24 @@ void testApp::onIdle( ofxLibwebsockets::Event& args )
 void testApp::onMessage( ofxLibwebsockets::Event& args )
 {
 	ofLog(OF_LOG_NOTICE, " ### got message!");
+  ofLog(OF_LOG_NOTICE, "new TEXT message: "
+        + args.message
+        //          + " from "
+        //          + args.conn.getClientName()
+        );
   //ofLog(OF_LOG_NOTICE, args.message);
 	// trace out string messages or JSON messages!
 	if ( args.json != NULL)
 	{
-    string int_str = args.json["depthCenter"].toStyledString();
-    int_str.erase(std::remove(int_str.begin(), int_str.end(), '\n'), int_str.end());
-    frame_rate = std::atoi(int_str.c_str());
-    //ofSetFrameRate(frame_rate);
+    string df_str = args.json["depthfocus"].toStyledString();
+    string fr_str = args.json["framerate"].toStyledString();
+    df_str.erase(std::remove(df_str.begin(), df_str.end(), '\n'), df_str.end());
+    fr_str.erase(std::remove(fr_str.begin(), fr_str.end(), '\n'), fr_str.end());
+    frame_rate = std::atoi(fr_str.c_str());
+    int depth_center = std::atoi(df_str.c_str());
+    cout << "depth_center " << frame_rate << " depth_center " << depth_center << endl;
+
+    ofSetFrameRate(frame_rate);
     cout <<" set frame rate to " << frame_rate << endl;
 		ofLog(OF_LOG_NOTICE, "new JSON message: "
           + args.json.toStyledString()
