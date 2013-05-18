@@ -1,23 +1,22 @@
 LiveModel = function() {
 
     var inputH = 480;
-    var inputW = 632;		// sizes from kinect
+    var inputW = 632;// sizes from kinect
 
 
     var offh = inputH/2;
     var offw = inputW/2;
 
-    var vh = 160;		// make sure inpuH/W are evenly
-				// divisible by vh/vw
-    var vw = 158;
+    var vh = 160;// make sure inpuH/W are evenly
+    var vw = 158;// divisible by vh/vw
 
 
     // var vh = 200;
     // var vw = 200;
 
-    // var vh = 200;		// defines number of faces
+    // var vh = 200;// defines number of faces
     // var vw = 300;
-    // var vh = 40;		// defines number of faces
+    // var vh = 40;// defines number of faces
     // var vw = 50;
 
 
@@ -32,13 +31,13 @@ LiveModel = function() {
     var i,j
 
     for (j=vh-1; j>=0; j--) {	// server loads points bottom to top
-	for (i=0; i<vw; i++) {
+		for (i=0; i<vw; i++) {
 
-	    var x = ((i*dx)-offw)*2;
-	    var y = ((j*dy)-offh)*2;
+		    var x = ((i*dx)-offw)*2;
+		    var y = ((j*dy)-offh)*2;
 
-	    model.vertices.push(new THREE.Vector3(x,y,0));
-	}
+		    model.vertices.push(new THREE.Vector3(x,y,0));
+		}
     }
 
     var vertexCount = model.vertices.length;
@@ -118,7 +117,7 @@ LiveModel = function() {
 
 
 
-	}
+		}
     }
     
     console.log("uv bounds: " + minu + " - " + maxu + ";" + minv + " - " + maxv);
@@ -221,7 +220,7 @@ LiveModel = function() {
 	    OF_BACKEND = true;
 	    
 	    opt = {
-			url: '10.18.14.2',
+			url: 'localhost',
 			port: '9001',
 			protocol: 'of-protocol',
 			on_update: undefined,
@@ -258,7 +257,45 @@ LiveModel = function() {
     	ws.send(JSON.stringify(msg));
 
     }
+    var framerate_value = 10;
+    var depthfocus_value = 5000;
 
+ 	var StreamController = function() {
+		  this.framerate = framerate_value;
+		  this.depthfocus = depthfocus_value;
+
+		  this.displayOutline = false;
+	};
+	console.log(ws);
+	window.onload = function() {
+		var text = new StreamController();
+		var gui = new dat.GUI(); 
+		var sc_directives = {
+			type: "message",
+			depthfocus: depthfocus_value,
+			framerate: framerate_value
+		}
+		var depth_controller = gui.add(text, 'depthfocus', 1, 10000);
+		var framerate_controller = gui.add(text, 'framerate', 1,30);
+
+		depth_controller.onFinishChange(function(value) {
+		  // Fires when a controller loses focus.
+		  value = Math.floor(value);
+		  depthfocus_value = value;
+		  sc_directives.depthfocus = depthfocus_value;
+		  console.log('sending msg', sc_directives)
+		  //ws.send(JSON.stringify(sc_directives));
+		});	
+
+		framerate_controller.onFinishChange(function(value) {
+		  // Fires when a controller loses focus.
+		  value = Math.floor(value);
+		  framerate_value = value;
+		  sc_directives.framerate = framerate_value;
+		  console.log('sending msg', sc_directives)
+		  //ws.send(JSON.stringify(sc_directives));
+		});	
+	};
 
 
     
