@@ -16,7 +16,9 @@ Author: Forrest Pruitt
 var WebSocketServer = require('websocket').server;
 var http = require('http');
 var http2 = require('http');
-var connections = [];
+// var connections = [];
+var kinnect_connections = [];
+var viewer_connections = [];
 var kinectServer = http.createServer(function(request, response) {
     // process HTTP request. Since we're writing just WebSockets server
     // we don't have to implement anything.
@@ -51,6 +53,7 @@ var kinectConnected=false;
 var viewerConnected=false;
 console.log('Listening on port 9000 for the Kinect');
 console.log('Listening on port 9001 for the Viewer');
+
 //---------------------------------------------
 // Kinect Code
 //---------------------------------------------
@@ -58,7 +61,7 @@ wsKinectServer.on('request', function(request)
 {
 		console.log('Connected to kinect client.');
     kinectConnection = request.accept('of-protocol', request.origin);
-    connections.push(kinectConnection);
+    kinnect_connections.push(kinectConnection);
 		console.log('Connected to kinect client.');
     kinectedConnected=true;
     // This is the most important callback for us, we'll handle
@@ -67,14 +70,16 @@ wsKinectServer.on('request', function(request)
     kinectConnection.on('message', function(message) 
     {
         if (message.type === 'utf8') 
-            console.log('Received Message: ' + message.utf8Data);
+        {
+            console.log('Received Message: ' + message.utf8Data);            
+        }
 
         else if (message.type === 'binary') 
         {
             console.log('Received Binary Message of ' + message.binaryData.length + ' bytes');
             if(viewerConnected)
             {
-                connections.forEach(function(destination) 
+                viewer_connections.forEach(function(destination) 
                 {
                     if(destination != kinectConnection)
                         destination.sendBytes(message.binaryData);
@@ -101,7 +106,7 @@ wsKinectServer.on('request', function(request)
 wsViewerServer.on('request', function(request) 
 {
     clientConnection = request.accept(null, request.origin);
-    connections.push(clientConnection);
+    viewer_connections.push(clientConnection);
     console.log('Connected to viewer client.');
     viewerConnected = true;
 
@@ -112,22 +117,22 @@ wsViewerServer.on('request', function(request)
     {
         if (message.type === 'utf8') 
         {
-            connections.forEach(function(destination) 
+            kinnect_connections.forEach(function(destination) 
             {
                 if(destination != clientConnection)
                     destination.sendUTF(message.utf8Data);
             });
         }
         else if (message.type === 'binary') 
-        {
-            destination.sendBytes(message.binaryData);
-            connections.forEach(function(destination) 
-            {
-                // 
-                if(destination != clientConnection)
-                    destination.sendBytes(message.binaryData);
+        {//probably not sending binary this way
+        //     destination.sendBytes(message.binaryData);
+        //     connections.forEach(function(destination) 
+        //     {
+        //         // 
+        //         if(destination != clientConnection)
+        //             destination.sendBytes(message.binaryData);
         
-            });
+        //     });
             
         }
         console.log(message);
