@@ -5,35 +5,18 @@
 # They should carry over to any *NIX based system using your package manager
 # of choice. 
 
-# On Mac OS (Lion) with homebrew:
+# To Get Viewers Ready
+# On OSX 10.8.2 (Mountain Lion)
+Install Brew Via Command Line: ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"
+Install Node via Command Line: brew install node
+Enter the websocket-kinect/client-pcview directory
+run: npm update
+Enter the websocket-kinect/client-surfaces directory
+run: npm update
 
-brew install cmake
-brew install automake
-brew install autoconf
-brew install libtool
-brew install pkg-config
-brew install xz
-brew install wget
-sudo easy_install pylzma
-sudo easy_install pip
-sudo pip install cython
-sudo pip install numpy
-sudo pip install autobahn
+In either client-surfaces or clientpcview, 
+run: node server.js
 
-cd /usr/local/Library/Formula
-curl --insecure -O https://raw.github.com/OpenKinect/libfreenect/master/platform/osx/homebrew/libfreenect.rb
-curl --insecure -O https://raw.github.com/OpenKinect/libfreenect/master/platform/osx/homebrew/libusb-freenect.rb
+Navigate browser to localhost:8080
 
-### 
-# Note: libfreenect won't build with Clang as at 2012-03-12, so if you're on Lion with no real GCC:
-brew install https://raw.github.com/Homebrew/homebrew-dupes/master/apple-gcc42.rb
-brew edit libfreenect  # add 'ENV.gcc' as the first line of the install method (i.e. straight after 'def install')
-###
 
-brew install libfreenect
-
-cd ~/src
-wget https://github.com/OpenKinect/libfreenect/tarball/master
-tar xvzf master
-cd OpenKinect-libfreenect-bac62d0/wrappers/python
-sudo python setup.py install
