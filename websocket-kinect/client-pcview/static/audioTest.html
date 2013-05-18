@@ -1,21 +1,152 @@
-<div id="demoContainer">
-    <div id="connectControls">
-        <button id="connectButton" onclick="connect()">Connect</button>
-        <button id="hangupButton" disabled="disabled" onclick="hangup()">Hangup</button>
-        <!-- <button id="disconnectButton" disabled="disabled" onclick="disconnect()">Disconnect</button> -->
-        <div id="iam">Not yet connected...</div>
-        <br />
-        <strong>Connected users:</strong>
-        <div id="otherClients"></div>
-    </div>
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<!--
+***
 
-    <!-- Note... this demo should be updated to remove video references -->
-    <div id="videos"> 
-        <video id="callerAudio"></video>
+hi there, view-sourcerer
+
+everything's in this file, but inlined and uglified.
+to make sense of the source see https://github.com/jawj/websocket-kinect
+
+***
+-->
+<style>
+* { -webkit-user-select: none; -moz-user-select: none; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); -webkit-text-size-adjust: none; }
+html, body { margin: 0; padding: 0; border: 0; overflow: hidden; width: 100%; height: 100%; background: #002; }
+#stats, #creditOuter { position: absolute; bottom: 0; }
+#creditOuter, #noWebGL { display: none; }
+#creditInner, #noWebGL { padding: 5px 10px; font-family: Helvetica; color: #fff; }
+#creditOuter { width: 100%; }
+#creditInner { text-align: right; font-size: 10px; }
+#noWebGL { font-size: 30px; width: 50%; }
+a { color: #fff; }
+#control { display: none; position: absolute; padding: 20px; cursor: pointer; opacity: 0.67; }
+#control:hover { opacity: 1; }
+
+/* Audio Controller */
+        #acceptCallBox {
+            display:none;
+            z-index:2;
+            position:absolute;
+            top:100px;
+            left:100px;
+            border:red solid 2px;
+            background-color:pink;
+            padding:15px;
+        }
+        #audioContainer
+        {
+            display:none;
+            position:absolute;
+                top:25;
+            width:250px;
+            height:150px;
+            text-align:center;
+            background-color:#e5eecc;
+            border:solid 1px #c3c3c3;
+            background-color:#ffffff;
+
+        }
+        #toggleSwitch
+        {
+            /*position:absolute;
+                bottom:0;
+                left:100px;*/
+            position:relative;
+            background-color:grey;
+            border: 2px solid black;
+            text-align:center;
+            height:25px;
+            width:175px;
+        }
+        #connectControls {
+            float:left;
+            width:250px;
+            text-align:center;
+            border: 2px solid black;
+            background-color:grey;
+
+        }
+        #otherClients {
+            height:75px;
+            overflow-y:scroll;
+            background-color:white;
+        }
+        #acceptCallBox {
+            display:none;
+            z-index:2;
+            position:absolute;
+            top:100px;
+            left:100px;
+            border:red solid 2px;
+            background-color:pink;
+            padding:15px;
+        }
+</style>
+
+<title>webkinect</title>
+<script src="js.libs/jquery.min.js"></script>
+<script src="js.libs/jquery.mousewheel.js"></script>
+<script src="js.libs/transform.js"></script>
+<script src="js.libs/raf.js"></script>
+<script src="js.libs/Stats.min.js"></script>
+<script src="js.libs/ThreeWebGL.min.js"></script>
+<script src="js.libs/lzma.min.js"></script>
+<script src="websocket-kinect.js"></script>
+<!-- <script src="node_modules/socket.io/socket.io.js"></script> -->
+<script type="text/javascript" src="js.libs/easyrtc.js"></script>
+<script type="text/javascript" src="js.libs/demo_audio_only.js"></script>
+
+<!-- Toggle Display for Audio Form -->
+<script> 
+	$(document).ready(function()
+	{
+  	$("#toggleSwitch").click(function()
+		{
+    	$("#audioContainer").slideToggle("slow");
+    });
+  });
+</script>
+
+</head>
+<body>
+<div id="noWebGL">
+  for this you need: (1) a recent, decent Mac or PC
+  and (2) <a href="http://google.com/chrome">Chrome</a>, <a href="http://www.mozilla.org/en-US/firefox/fx/">Firefox <b>11.0b</b></a>, or another web browser that has WebGL and binary WebSockets
+</div>
+<div id="creditOuter"><div id="creditInner">
+  <span id="db_me" width="24" height="24"></span>
+  responds to:
+    <b>click + drag</b> 
+  — <b>scroll-wheel</b>
+</div></div>
+<canvas id="control" width="24" height="24"></canvas>
+
+<!--Audio Box Here -->
+
+    <div id="toggleSwitch"> Audio Setup </div>
+    <div id="audioContainer">
+        <div id="connectControls">
+            <!-- <input type="text" id="name" ><br /> -->
+            <button id="connectButton" onclick="connect()">Connect</button>
+            <button id="hangupButton" disabled="disabled" onclick="hangup()">Hangup</button>
+            <div id="iam">Not yet connected...</div>
+            <strong>Connected users:</strong>
+            <div id="otherClients"></div>
+        </div>
+
+        <video id="selfVideo"></video>
+        <video id="callerVideo"></video>
+
         <div id="acceptCallBox"> <!-- Should be initially hidden using CSS -->
             <div id="acceptCallLabel"></div>
             <button id="callAcceptButton" >Accept</button> <button id="callRejectButton">Reject</button>
         </div>
-    </div>
-</div>
 
+    </div>
+
+
+</body>
+</html>
