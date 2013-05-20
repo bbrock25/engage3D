@@ -33,7 +33,15 @@ void testApp::setup()
   options.bUseSSL = false;
   
   bool connected = client.connect( options );
-
+    
+  while (!connected)
+  {
+    cout << "Failed to connect to " << options.host << " on port " << options.port << "." << endl;
+    cout << "Trying again in 5 seconds." << endl;
+    sleep(5);
+    connected = client.connect( options );
+  }
+    
   client.addListener(this);
   ofSetFrameRate(60);
 
