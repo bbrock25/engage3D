@@ -19,4 +19,23 @@ run: node server.js
 
 Navigate browser to localhost:8080
 
+# To Get Kinect Server Running
+# On OSX 10.8.2 (Mountain Lion)
+Download OpenFrameworks
+Download OfXKinect, place in (openframeworks_root)/addons/
+Copy the OfXLibWebsockets add-on from websocket-kinect/client-OF/ to (openframeworks_root)/addons/
+Copy the KinectClient directory from websocket-Kinect/client-OF/ to (openframeworks_root)/apps/myApps
+Open the XCode Project file in (openframeworks_root)/apps/myApps/KinectClient
+Build + Run
 
+
+# To Connect the Kinect Client and the Viewer Client
+Navigate to websocket-kinect/server
+Run 'node newCloudServer.js'
+Restart the XCode Application
+Reload any open viewers
+
+
+For questions or comments, please email forrest-pruitt@mocs.utc.edu or bill@engage3d.org
+
+Thanks!
