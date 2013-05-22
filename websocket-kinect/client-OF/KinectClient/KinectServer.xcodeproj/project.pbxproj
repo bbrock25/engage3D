@@ -1037,7 +1037,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = KinectServerDebug;
-				SDKROOT = "";
+				SDKROOT = macosx;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -1124,7 +1124,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = KinectServer;
-				SDKROOT = "";
+				SDKROOT = macosx;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
