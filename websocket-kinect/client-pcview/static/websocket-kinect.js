@@ -11,7 +11,7 @@
       stats: true,
       fog: 1,
       credits: 1,
-      ws: "ws://" + "localhost:9000"
+      ws: "ws://" + "172.16.97.207:9001"
     };
     console.log("debug: " + params.ws);
     wls = window.location.search;
