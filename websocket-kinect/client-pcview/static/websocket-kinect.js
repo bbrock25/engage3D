@@ -210,7 +210,45 @@
         ws = new WebSocket('ws://'+opt.url+':'+opt.port+'/', opt.protocol );
       else
         ws = new WebSocket(url);      ws.binaryType = 'arraybuffer';
-      
+          var framerate_value = 10;
+    var depthfocus_value = 5000;
+
+        var StreamController = function() {
+                  this.framerate = framerate_value;
+                  this.depthfocus = depthfocus_value;
+
+                  this.displayOutline = false;
+        };
+        console.log(ws);
+        window.onload = function() {
+                var text = new StreamController();
+                var gui = new dat.GUI();
+                var sc_directives = {
+                        type: "message",
+                        depthfocus: depthfocus_value,
+                        framerate: framerate_value
+                }
+                var depth_controller = gui.add(text, 'depthfocus', 1, 10000);
+                var framerate_controller = gui.add(text, 'framerate', 1,30);
+
+                depth_controller.onFinishChange(function(value) {
+                  // Fires when a controller loses focus.
+                  value = Math.floor(value);
+                  depthfocus_value = value;
+                  sc_directives.depthfocus = depthfocus_value;
+                  console.log('sending msg', sc_directives)
+                  //ws.send(JSON.stringify(sc_directives));
+                });
+
+                framerate_controller.onFinishChange(function(value) {
+                  // Fires when a controller loses focus.
+                  value = Math.floor(value);
+                  framerate_value = value;
+                  sc_directives.framerate = framerate_value;
+                  console.log('sending msg', sc_directives)
+                  //ws.send(JSON.stringify(sc_directives));
+                });
+        };      
       seenKeyFrame = false;
       ws.onopen = function() {
         return console.log('Connected');
@@ -223,5 +261,7 @@
     };
     return connect();
   });
+
+
 
 }).call(this);
