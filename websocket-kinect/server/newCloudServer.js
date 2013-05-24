@@ -17,7 +17,7 @@ var WebSocketServer = require('websocket').server;
 var http = require('http');
 var http2 = require('http');
 // var connections = [];
-var kinnect_connections = [];
+var kinect_connections = [];
 var viewer_connections = [];
 var kinectServer = http.createServer(function(request, response) {
     // process HTTP request. Since we're writing just WebSockets server
@@ -59,10 +59,9 @@ console.log('Listening on port 9001 for the Viewer');
 //---------------------------------------------
 wsKinectServer.on('request', function(request) 
 {
-		console.log('Connected to kinect client.');
     kinectConnection = request.accept('of-protocol', request.origin);
-    kinnect_connections.push(kinectConnection);
-		console.log('Connected to kinect client.');
+    kinect_connections.push(kinectConnection);
+	console.log('Connected to kinect client.');
     kinectedConnected=true;
     // This is the most important callback for us, we'll handle
     // all messages from users here.
@@ -76,7 +75,7 @@ wsKinectServer.on('request', function(request)
 
         else if (message.type === 'binary') 
         {
-            console.log('Received Binary Message of ' + message.binaryData.length + ' bytes');
+            //console.log('Received Binary Message of ' + message.binaryData.length + ' bytes');
             if(viewerConnected)
             {
                 viewer_connections.forEach(function(destination) 
@@ -86,14 +85,35 @@ wsKinectServer.on('request', function(request)
                 });
             }
         }
-    //Free up memory?
-		kinectConnection = null;
+
 		});
 
     kinectConnection.on('close', function(connection) 
     {
-  		kinectConnection = null;  
-	    console.log('Closing connection to Kinect...');
+        console.log('Closing connection to Kinect...');
+
+        kinect_connections.forEach(function(connection) 
+        {
+            if(kinectConnection.socket._peername == connection.socket._peername)
+            {
+                console.log("Closing connection with label: ");
+                console.log(connection.socket._peername);
+                kinect_connections.splice(connection,1);
+            }
+        });
+
+        kinectConnected = false;
+        kinectConnection = null; 
+
+        console.log('Closed connection to Kinect.');
+        var numConnections = 0; 
+        kinect_connections.forEach(function(connection) 
+        {
+            numConnections++;
+        }
+        );
+        console.log('Open Connections: ' + numConnections );
+	    
     });
 
 });
@@ -105,7 +125,9 @@ wsKinectServer.on('request', function(request)
 //Set up the connection from this server to the viewer.
 wsViewerServer.on('request', function(request) 
 {
+    
     clientConnection = request.accept(null, request.origin);
+    console.log(clientConnection.socket._peername)
     viewer_connections.push(clientConnection);
     console.log('Connected to viewer client.');
     viewerConnected = true;
@@ -117,7 +139,7 @@ wsViewerServer.on('request', function(request)
     {
         if (message.type === 'utf8') 
         {
-            kinnect_connections.forEach(function(destination) 
+            kinect_connections.forEach(function(destination) 
             {
                 if(destination != clientConnection)
                     destination.sendUTF(message.utf8Data);
@@ -138,8 +160,30 @@ wsViewerServer.on('request', function(request)
         console.log(message);
     });
 
-    clientConnection.on('close', function(connection) {
+    clientConnection.on('close', function(connection) 
+    {
+        console.log('Closing connection to viewer.');
+        viewer_connections.forEach(function(connection) 
+            {
+                if(clientConnection.socket._peername == connection.socket._peername)
+                {
+                    console.log("Closing connection with label: ");
+                    console.log(connection.socket._peername);
+                    viewer_connections.splice(connection,1);
+                }
+            }
+        );
+
         console.log('Closed connection to viewer.');
+        var numConnections = 0; 
+        viewer_connections.forEach(function(connection) 
+        {
+            numConnections++;
+        }
+        );
+        console.log('Open Connections: ' + numConnections );
+
+
     });
 });
 
