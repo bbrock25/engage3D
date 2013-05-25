@@ -5,19 +5,21 @@
 # They should carry over to any *NIX based system using your package manager
 # of choice. 
 
-# To Get Viewers Ready
+# To Get Passthrough Server Ready
 # On OSX 10.8.2 (Mountain Lion)
 Install Brew Via Command Line: ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"
 Install Node via Command Line: brew install node
 Enter the websocket-kinect/client-pcview directory
 run: npm update
-Enter the websocket-kinect/client-surfaces directory
-run: npm update
 
-In either client-surfaces or clientpcview, 
+Enter /server and run 'node newCloudServer.js'
+
+In either /server/surfaces or /server/pointcloud, 
 run: node server.js
 
-Navigate browser to localhost:8080
+To access host locally, simply point your browser to localhost:8080
+To access host accross a LAN, just connect to <localIP>:8080 in Chrome/Firefox.
+To access host accross the internet, ensure that you have a high speed connection and that the computer you are running the server on is visible from outside your network (ie, not being blocked by a firewall).
 
 # To Get Kinect Server Running
 # On OSX 10.8.2 (Mountain Lion)
