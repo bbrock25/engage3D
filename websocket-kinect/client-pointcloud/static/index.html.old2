@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - orbit controls</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body 
+			{
+				color: #000;
+				font-family:Monospace;
+				font-size:13px;
+				text-align:center;
+				font-weight: bold;
+
+				background-color: #fff;
+				margin: 0px;
+				overflow: hidden;
+			}
+
+			#info 
+			{
+				color:#000;
+				position: absolute;
+				top: 0px; width: 100%;
+				padding: 5px;
+
+			}
+
+			a 
+			{
+				color: red;
+			}
+			#logos {
+				position:absolute;
+				bottom:30px;
+				width:100%;
+			}
+			#engageLogo{
+				postion:absolute;
+				left:100px;
+			}
+			#mozillaLogo{
+				postion:absolute;
+				right:100px;
+			}
+		/* Audio Controller */
+        #acceptCallBox {
+            display:none;
+            z-index:2;
+            position:absolute;
+            top:100px;
+            left:100px;
+            border:red solid 2px;
+            background-color:pink;
+            padding:15px;
+        }
+        #audioContainer
+        {
+            display:none;
+            position:absolute;
+            top:25px;
+            left:100px;
+            width:250px;
+            height:150px;
+            text-align:center;
+            background-color:#ffffff;
+
+        }
+       #toggleSwitch
+        {
+            position:absolute;
+                top:0;
+                left:100px;
+            /*position:relative;*/
+            background-color:grey;
+            border: 2px solid black;
+            text-align:center;
+            height:25px;
+            width:250px;
+        }
+        #connectControls {
+            float:left;
+            width:250px;
+            height:150px;
+            text-align:center;
+            border: 2px solid black;
+            background-color:grey;
+
+        }
+        #otherClients {
+            height:75px;
+            overflow-y:scroll;
+            background-color:white;
+        }
+        #acceptCallBox {
+            display:none;
+            z-index:2;
+            position:absolute;
+            top:150px;
+            left:150px;
+            border:red solid 2px;
+            background-color:pink;
+            padding:15px;
+        }
+	</style>
+	</style>
+	<title> Engage3D Kinect Videoconferencing </title>
+</head>
+	<body>
+	<div id="container"></div>
+	<div id="info">
+		<a href="http://threejs.org" target="_blank">three.js</a> - vector3 animated point cloud
+	</div>
+	<script src="js.libs/three.min.js"></script>
+	<script src="js.libs/stats.min.js"></script>
+	<script src="js.libs/dat.gui.min.js"></script>
+	<script src="js.custom/OrbitControls.js"></script>
+	<script src="js.custom/Detector.js"></script>
+	<script src="js.custom/WSDriver.js"></script>
+	<script src="Main.js"></script>
+	<script src="js.libs/jquery.js"></script>
+	<script src="js.libs/easyrtc.js"></script>
+	<script src="js.libs/demo_audio_only.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+
+	<script> 
+		$(document).ready(function()
+		{
+			$("#toggleSwitch").click(function()
+			{
+				$("#audioContainer").slideToggle("slow");
+			});
+		});
+	</script>
+	<div id="toggleSwitch"> Audio Setup </div>
+	    <div id="audioContainer">
+	        <div id="connectControls">
+	            <!-- <input type="text" id="name" ><br /> -->
+	            <button id="connectButton" onclick="connect()">Connect</button>
+	            <button id="hangupButton" disabled="disabled" onclick="hangup()">Hangup</button>
+	            <div id="iam">Not yet connected...</div>
+	            <strong>Connected users:</strong>
+	            <div id="otherClients"></div>
+	        </div>
+
+	        <video id="selfVideo"></video>
+	        <video id="callerVideo"></video>
+			<video id="callerAudio"></video>
+	        <div id="acceptCallBox"> <!-- Should be initially hidden using CSS -->
+	            <div id="acceptCallLabel"></div>
+	            <button id="callAcceptButton" >Accept</button> <button id="callRejectButton">Reject</button>
+	        </div>
+	    </div>
+	</div>
+	<div id="logos">
+		<div id="engageLogo">
+			<a href="http://www.engage3D.org/"><img src="images/engageLogo.png"/ width="330" height="180"></a>
+		</div>
+	</body>
+</html>
